@@ -1,0 +1,26 @@
+{
+  "name": "wind-hans-reels",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@prisma/client": "5.18.0",
+    "bcrypt": "^5.1.1",
+    "cloudinary": "^2.4.0",
+    "cookie": "^0.6.0",
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "prisma": "5.18.0",
+    "tailwindcss": "^3.4.3"
+  }
+}

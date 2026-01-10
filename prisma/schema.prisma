@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// USER MODEL
+// Stores user account information
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique  // Email must be unique for login
+  password  String              // Hashed password (never store plain text!)
+  createdAt DateTime  @default(now())
+  
+  // Relationships
+  reels     Reel[]
+  likes     Like[]
+  comments  Comment[]
+}
+
+// REEL MODEL
+// Stores video posts (like Instagram reels)
+model Reel {
+  id        String    @id @default(cuid())
+  videoUrl  String              // Cloudinary video URL
+  caption   String    @default("")
+  createdAt DateTime  @default(now())
+  
+  // Relationship: Each reel belongs to one user
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relationships
+  likes     Like[]
+  comments  Comment[]
+  
+  @@index([userId])  // Index for faster queries by user
+  @@index([createdAt])  // Index for sorting by date
+}
+
+// LIKE MODEL
+// Stores likes on reels
+model Like {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, reelId])  // User can only like a reel once
+  @@index([reelId])
+}
+
+// COMMENT MODEL
+// Stores comments on reels
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  reelId    String
+  reel      Reel     @relation(fields: [reelId], references: [id], onDelete: Cascade)
+  
+  @@index([reelId])
+  @@index([createdAt])
+}
