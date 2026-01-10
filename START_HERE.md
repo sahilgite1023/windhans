@@ -22,7 +22,7 @@
 
 ## 📋 What You're Building
 
-An **Instagram-style reels platform** with:
+A **short video sharing platform** with:
 - ✅ User accounts (register/login)
 - ✅ Video uploads
 - ✅ Feed with auto-play

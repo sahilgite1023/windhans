@@ -5,7 +5,7 @@ import './globals.css'
 
 export const metadata = {
   title: 'Wind Hans - Share Your Reels',
-  description: 'Instagram-style reels platform built with Next.js',
+  description: 'Short video sharing platform built with Next.js',
 }
 
 export default function RootLayout({ children }) {

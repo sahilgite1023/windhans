@@ -1,4 +1,4 @@
-# Windhands - Instagram-Style Reels Platform
+# Windhands - Short Video Sharing Platform
 
 A modern, full-stack video sharing platform built with Next.js, featuring user authentication, video uploads, and a clean light-themed UI.
 

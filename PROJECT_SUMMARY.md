@@ -2,7 +2,7 @@
 
 ## ✨ What You Have Built
 
-A full-stack Instagram-style reels platform with:
+A full-stack short video sharing platform with:
 - ✅ User authentication (register, login, logout)
 - ✅ Video uploads to Cloudinary
 - ✅ Reels feed with auto-play
