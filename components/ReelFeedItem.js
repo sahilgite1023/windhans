@@ -3,12 +3,13 @@
 
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
 export default function ReelFeedItem({ reel, currentUserId }) {
   const router = useRouter()
   const videoRef = useRef(null)
+  const clickTimeoutRef = useRef(null)
   const [isVisible, setIsVisible] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLiked, setIsLiked] = useState(reel.likes.some(like => like.userId === currentUserId))
@@ -47,22 +48,21 @@ export default function ReelFeedItem({ reel, currentUserId }) {
     }
   }, [])
   
-  const handleVideoClick = () => {
-    if (videoRef.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play()
-        setIsPlaying(true)
-      } else {
-        videoRef.current.pause()
-        setIsPlaying(false)
-      }
+  const togglePlayPause = useCallback(() => {
+    if (!videoRef.current) return
+    
+    if (videoRef.current.paused) {
+      videoRef.current.play().then(() => setIsPlaying(true)).catch(console.error)
+    } else {
+      videoRef.current.pause()
+      setIsPlaying(false)
     }
-  }
+  }, [])
   
-  const handleVideoDoubleClick = async () => {
+  const handleDoubleTapLike = useCallback(async () => {
     // Show heart animation
     setShowHeartAnimation(true)
-    setTimeout(() => setShowHeartAnimation(false), 1000)
+    setTimeout(() => setShowHeartAnimation(false), 800)
     
     // Like the reel if not already liked
     if (!isLiked) {
@@ -80,9 +80,27 @@ export default function ReelFeedItem({ reel, currentUserId }) {
         console.error('Like error:', error)
       }
     }
-  }
+  }, [isLiked, reel.id])
   
-  const handleLike = async () => {
+  const handleVideoClick = useCallback((e) => {
+    e.preventDefault()
+    
+    // Clear existing timeout
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current)
+      clickTimeoutRef.current = null
+      // Double click detected
+      handleDoubleTapLike()
+    } else {
+      // Single click - wait to see if it's a double click
+      clickTimeoutRef.current = setTimeout(() => {
+        togglePlayPause()
+        clickTimeoutRef.current = null
+      }, 250)
+    }
+  }, [togglePlayPause, handleDoubleTapLike])
+  
+  const handleLike = useCallback(async () => {
     try {
       const response = await fetch(`/api/reels/${reel.id}/like`, {
         method: 'POST'
@@ -96,7 +114,7 @@ export default function ReelFeedItem({ reel, currentUserId }) {
     } catch (error) {
       console.error('Like error:', error)
     }
-  }
+  }, [reel.id])
   
   const handleComment = async (e) => {
     e.preventDefault()
@@ -178,9 +196,8 @@ export default function ReelFeedItem({ reel, currentUserId }) {
         <video
           ref={videoRef}
           src={reel.videoUrl}
-          className="w-full max-h-[600px] object-contain cursor-pointer"
+          className="w-full max-h-[600px] object-contain cursor-pointer select-none"
           onClick={handleVideoClick}
-          onDoubleClick={handleVideoDoubleClick}
           loop
           muted
           playsInline
@@ -188,14 +205,16 @@ export default function ReelFeedItem({ reel, currentUserId }) {
         
         {/* Double-tap Heart Animation */}
         {showHeartAnimation && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <svg
-              className="w-32 h-32 text-white animate-ping opacity-80"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+            <div className="animate-[ping_0.8s_ease-out]">
+              <svg
+                className="w-32 h-32 text-red-500 drop-shadow-lg"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </div>
           </div>
         )}
         
