@@ -53,7 +53,6 @@ export default function ReelCard({ reel, showDelete = false }) {
           className="w-full h-full object-cover cursor-pointer"
           onClick={handleVideoClick}
           loop
-          muted
         />
         
         {/* Play/Pause Overlay */}

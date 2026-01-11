@@ -199,7 +199,6 @@ export default function ReelFeedItem({ reel, currentUserId }) {
           className="w-full max-h-[600px] object-contain cursor-pointer select-none"
           onClick={handleVideoClick}
           loop
-          muted
           playsInline
         />
         
